@@ -28,13 +28,10 @@ services:
       sh -c "./wait-for-it.sh db:5432 -- alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
   model:
-    image: housing-model
+    build: ./housing-model
     container_name: housing_model
     ports:
-      - "8002:8000"  # Le modèle est servi sur le port 8000 dans le container, accessible via le port 8002 de l'hôte
-    volumes:
-      - mlflow_data:/opt/mlflow/mlruns
+      - "8002:8002"  # L'API d'inférence est accessible sur le port 8002
 
 volumes:
   postgres_data:
-  mlflow_data:

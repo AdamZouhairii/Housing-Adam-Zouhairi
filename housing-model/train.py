@@ -22,7 +22,7 @@ target = df_numeric["median_house_value"]
 X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
 
 # Entraînement du modèle avec régression Lasso
-alpha_value = 1.0  # Valeur de régularisation, ajustable selon besoin
+alpha_value = 1.0  # Valeur de régularisation ajustable
 model = Lasso(alpha=alpha_value)
 model.fit(X_train, y_train)
 
@@ -30,7 +30,7 @@ model.fit(X_train, y_train)
 score = model.score(X_test, y_test)
 print("Score du modèle :", score)
 
-# Inférer la signature du modèle à partir des données d'entraînement
+# Inférer la signature du modèle (structure des entrées et sorties)
 signature = mlflow.models.signature.infer_signature(X_train, model.predict(X_train))
 
 # Journalisation avec MLflow
@@ -45,10 +45,9 @@ with mlflow.start_run() as run:
         input_example=X_train.head(1),
         signature=signature
     )
-    
-    # Enregistrement dans le registre de modèles
     run_id = run.info.run_id
-    print(run_id)
-    model_uri = f"runs:/{run_id}/model"
-    registered_model = mlflow.register_model(model_uri, "HousingLassoModel")
-    print("Modèle enregistré dans le registre, version :", registered_model.version)
+    print("Modèle loggué avec le run ID :", run_id)
+
+# Exporter le modèle dans le dossier 'model'
+mlflow.sklearn.save_model(model, "model", signature=signature, input_example=X_train.head(1))
+print("Modèle exporté dans le dossier 'model'")

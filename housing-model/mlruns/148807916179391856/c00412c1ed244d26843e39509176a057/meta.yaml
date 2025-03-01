@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vboxuser/Desktop/Housing-Adam-Zouhairi/housing-model/mlruns/148807916179391856/c00412c1ed244d26843e39509176a057/artifacts
+end_time: 1740840275974
+entry_point_name: ''
+experiment_id: '148807916179391856'
+lifecycle_stage: active
+run_id: c00412c1ed244d26843e39509176a057
+run_name: flawless-mouse-52
+run_uuid: c00412c1ed244d26843e39509176a057
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740840272936
+status: 3
+tags: []
+user_id: vboxuser

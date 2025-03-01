@@ -5,7 +5,7 @@ import numpy as np
 
 app = FastAPI(title="Housing Model Inference API")
 
-# Charger le modèle depuis MLflow (chemin local ou via le tracking server)
+# Charger le modèle depuis le dossier "model"
 model = mlflow.sklearn.load_model("model")
 
 class HouseFeatures(BaseModel):
