@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:13
+    container_name: housing_postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-housing_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./housing-api
+    container_name: housing_api
+    environment:
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-housing_db}
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "./wait-for-it.sh db:5432 -- alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  model:
+    image: housing-model
+    container_name: housing_model
+    ports:
+      - "8002:8000"  # Le modèle est servi sur le port 8000 dans le container, accessible via le port 8002 de l'hôte
+    volumes:
+      - mlflow_data:/opt/mlflow/mlruns
+
+volumes:
+  postgres_data:
+  mlflow_data:

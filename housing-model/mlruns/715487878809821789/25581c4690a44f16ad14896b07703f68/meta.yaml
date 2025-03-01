@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vboxuser/Desktop/Housing-Adam-Zouhairi/housing-model/mlruns/715487878809821789/25581c4690a44f16ad14896b07703f68/artifacts
+end_time: 1740828539847
+entry_point_name: ''
+experiment_id: '715487878809821789'
+lifecycle_stage: active
+run_id: 25581c4690a44f16ad14896b07703f68
+run_name: gentle-seal-495
+run_uuid: 25581c4690a44f16ad14896b07703f68
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740828537367
+status: 3
+tags: []
+user_id: vboxuser

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vboxuser/Desktop/Housing-Adam-Zouhairi/housing-model/mlruns/715487878809821789/a22a8d656e0d4f0aa32f541072b9f1a3/artifacts
+end_time: 1740828310957
+entry_point_name: ''
+experiment_id: '715487878809821789'
+lifecycle_stage: active
+run_id: a22a8d656e0d4f0aa32f541072b9f1a3
+run_name: capricious-lark-890
+run_uuid: a22a8d656e0d4f0aa32f541072b9f1a3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740828308395
+status: 4
+tags: []
+user_id: vboxuser

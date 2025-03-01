@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vboxuser/Desktop/Housing-Adam-Zouhairi/housing-model/mlruns/715487878809821789/6f03adca6c414cf9942afcd70e37e6c0/artifacts
+end_time: 1740826450419
+entry_point_name: ''
+experiment_id: '715487878809821789'
+lifecycle_stage: active
+run_id: 6f03adca6c414cf9942afcd70e37e6c0
+run_name: merciful-slug-468
+run_uuid: 6f03adca6c414cf9942afcd70e37e6c0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1740826447685
+status: 3
+tags: []
+user_id: vboxuser
