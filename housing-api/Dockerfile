@@ -1,28 +1,28 @@
 FROM python:3.12
 
-# Installer les dépendances système
+# Met à jour les paquets et installe les dépendances système nécessaires
 RUN apt-get update && apt-get install -y gcc libpq-dev
 
 WORKDIR /app
 
-# Copier les fichiers de configuration
+# Copie les fichiers de configuration nécessaires pour Poetry
 COPY pyproject.toml poetry.lock* ./
 
-# Installer Poetry
+# Installe Poetry et configure pour ne pas créer d'environnements virtuels
 RUN pip install poetry && poetry config virtualenvs.create false
 
-# Installer les dépendances Python
+# Installe les dépendances Python définies dans pyproject.toml
 RUN poetry install --no-root
 
-# Copier le reste du code
+# Copie le reste du code de l'application dans le conteneur
 COPY . .
 
-# Copier le script wait-for-it et le rendre exécutable
+# Copie le script wait-for-it et le rend exécutable
 COPY wait-for-it.sh /app/wait-for-it.sh
 RUN chmod +x /app/wait-for-it.sh
 
-# Exposer le port de l'API
+# Expose le port 8000 pour accéder à l'API
 EXPOSE 8000
 
-# La commande de démarrage est définie dans docker-compose.yml
+# Définit la commande de démarrage de l'application
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

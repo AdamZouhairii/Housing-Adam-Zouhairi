@@ -5,16 +5,16 @@ import mlflow
 import mlflow.sklearn
 import mlflow.models.signature
 
-# Charger le dataset
+# Charge le dataset
 df = pd.read_csv("housing.csv")
 
-# Supprimer la colonne non numérique
+# Supprime la colonne non numérique
 df_numeric = df.drop("ocean_proximity", axis=1)
 
-# Supprimer les lignes contenant des NaN
+# Supprime les lignes contenant des NaN
 df_numeric = df_numeric.dropna()
 
-# Préparer les données
+# Prépare les données
 features = df_numeric.drop("median_house_value", axis=1)
 target = df_numeric["median_house_value"]
 
@@ -30,7 +30,7 @@ model.fit(X_train, y_train)
 score = model.score(X_test, y_test)
 print("Score du modèle :", score)
 
-# Inférer la signature du modèle (structure des entrées et sorties)
+# Infére la signature du modèle (structure des entrées et sorties)
 signature = mlflow.models.signature.infer_signature(X_train, model.predict(X_train))
 
 # Journalisation avec MLflow
@@ -48,6 +48,6 @@ with mlflow.start_run() as run:
     run_id = run.info.run_id
     print("Modèle loggué avec le run ID :", run_id)
 
-# Exporter le modèle dans le dossier 'model'
+# Exporte le modèle dans le dossier 'model'
 mlflow.sklearn.save_model(model, "model", signature=signature, input_example=X_train.head(1))
 print("Modèle exporté dans le dossier 'model'")

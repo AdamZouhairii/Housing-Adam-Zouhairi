@@ -3,76 +3,73 @@ services:
     image: postgres:13
     container_name: housing_postgres
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-housing_db}
+      POSTGRES_USER: ${DB_USER:-postgres} # Définit l'utilisateur de la base de données
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres} # Définit le mot de passe de la base de données
+      POSTGRES_DB: ${DB_NAME:-housing_db} # Définit le nom de la base de données
     ports:
-      - "5432:5432"
+      - "5432:5432" # Mappe le port 5432 de l'hôte au port 5432 du conteneur
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data # Monte un volume pour persister les données de la base
 
   api:
-    build: ./housing-api
+    build: ./housing-api # Construit l'image à partir du Dockerfile dans le répertoire housing-api
     container_name: housing_api
     environment:
-      DB_USER: ${DB_USER:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: ${DB_NAME:-housing_db}
+      DB_USER: ${DB_USER:-postgres} # Utilisateur de la base de données
+      DB_PASSWORD: ${DB_PASSWORD:-postgres} # Mot de passe de la base de données
+      DB_HOST: db # Hôte de la base de données
+      DB_PORT: 5432 # Port de la base de données
+      DB_NAME: ${DB_NAME:-housing_db} # Nom de la base de données
     depends_on:
-      - db
+      - db # Dépend du service db
     ports:
-      - "8000:8000"
+      - "8000:8000" # Mappe le port 8000 de l'hôte au port 8000 du conteneur
     command: >
-      sh -c "./wait-for-it.sh db:5432 -- alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      sh -c "./wait-for-it.sh db:5432 -- alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000" # Commande pour attendre la disponibilité de la base de données et démarrer l'API
 
   model:
-    build: ./housing-model
+    build: ./housing-model # Construit l'image à partir du Dockerfile dans le répertoire housing-model
     container_name: housing_model
     ports:
-      - "8002:8002"
+      - "8002:8002" # Mappe le port 8002 de l'hôte au port 8002 du conteneur
 
   consumer:
-    build: ./housing-consumer
+    build: ./housing-consumer # Construit l'image à partir du Dockerfile dans le répertoire housing-consumer
     container_name: housing_consumer
     depends_on:
-      - api
-      - broker
+      - api # Dépend du service api
+      - broker # Dépend du service broker
     environment:
-      # Les variables ne sont pas utilisées dans le code, car on force les valeurs
-      # mais on peut les définir si besoin
-      KAFKA_BROKER: "broker:29092"
-      KAFKA_TOPIC: "housing_topic"
-      API_ENDPOINT: "http://housing_api:8000/houses"
+      KAFKA_BROKER: "broker:29092" # Adresse du broker Kafka
+      KAFKA_TOPIC: "housing_topic" # Nom du topic Kafka
+      API_ENDPOINT: "http://housing_api:8000/houses" # Endpoint de l'API
 
   broker:
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:latest # Utilise l'image Kafka de Confluent
     container_name: broker
     hostname: broker
     ports:
-      - "9092:9092"
-      - "29092:29092"
+      - "9092:9092" # Mappe le port 9092 de l'hôte au port 9092 du conteneur
+      - "29092:29092" # Mappe le port 29092 de l'hôte au port 29092 du conteneur
     environment:
-      KAFKA_NODE_ID: 1
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
-      # Ici, on s'assure que le listener interne est accessible en tant que broker:29092
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://broker:9092,PLAINTEXT_HOST://broker:29092"
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_PROCESS_ROLES: "broker,controller"
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker:29093"
-      KAFKA_LISTENERS: "PLAINTEXT://broker:9092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:29092"
-      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
-      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
-      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NODE_ID: 1 # Identifiant du nœud Kafka
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT" # Configuration des protocoles de sécurité des listeners
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://broker:9092,PLAINTEXT_HOST://broker:29092" # Listeners annoncés pour Kafka
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # Facteur de réplication pour le topic des offsets
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 # Délai initial de rééquilibrage du groupe
+      KAFKA_PROCESS_ROLES: "broker,controller" # Rôles du processus Kafka
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@broker:29093" # Votants du quorum du contrôleur
+      KAFKA_LISTENERS: "PLAINTEXT://broker:9092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:29092" # Listeners pour Kafka
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT" # Nom du listener inter-broker
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER" # Noms des listeners du contrôleur
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs" # Répertoires de logs de Kafka
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk" # Identifiant du cluster Kafka
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true" # Active la création automatique des topics
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "broker:9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "broker:9092"] # Commande de vérification de l'état du broker Kafka
+      interval: 10s # Intervalle entre les vérifications
+      timeout: 5s # Délai d'attente pour chaque vérification
+      retries: 5 # Nombre de tentatives avant de considérer le service comme défaillant
 
 volumes:
-  postgres_data:
+  postgres_data: # Volume pour persister les données de la base de données PostgreSQL
